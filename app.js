@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const lodash = require("lodash");
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -36,7 +37,20 @@ app.post("/compose", (req, res) => {
   posts.push(post);
 
   res.redirect("/");
-})
+});
+
+app.get("/posts/:post", (req, res) => {
+  posts.forEach((post) => {
+    if (post.postTitle === req.params.post) {
+      res.redirect("/posts/" + lodash.kebabCase(post.postTitle));
+    }
+
+    if (lodash.kebabCase(post.postTitle) === req.params.post) {
+      res.render("post", {post: post});
+    }
+  });
+  res.send("<h1>404</h1>");
+});
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");
